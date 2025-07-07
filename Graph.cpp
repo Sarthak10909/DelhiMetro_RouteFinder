@@ -137,9 +137,17 @@ void graph_function(vector <vector<int>>& graph) {
 
 
 //function for respected line number
-int line_num_function(map<int, string>& line_num, string& line) {
-    for (int i = 0; i < line_num.size(); i++) {
-        if (line_num[i] == line)return i;
+// int line_num_function(map<int, string>& line_num, string& line) {
+//     for (int i = 0; i < line_num.size(); i++) {
+//         if (line_num[i] == line)return i;
+//     }
+//     return -1;
+// }
+int line_num_function(const std::map<int, std::string>& line_num, const std::string& line) {
+    for (const auto& pair : line_num) {
+        if (pair.second == line) {
+            return pair.first;
+        }
     }
     return -1;
 }
