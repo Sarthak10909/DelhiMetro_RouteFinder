@@ -7,4 +7,4 @@ orange/
 magenta/
 pink/
 aqua/
-blue1/
+blue/

@@ -1,128 +1,118 @@
 #include "headers/Graph.h"
 #include "Graph.cpp"
 #include <iostream>
-#include <string.h>
+#include <string>
 #include <climits>
 #include <fstream>
 #include <unistd.h>
-using namespace std;
 #include <map>
+#include <memory>
+#include <array>
 
-// login() function
+using namespace std;
+
+// Login function with C++14 improvements
 int login()
 {
-    char dum, u_name[30], name[30], g_pwd[30], pwd[30];
-    int flag = 0, s = 1;
+    string name, pwd;
+    int flag = 0;
+
     cout << "\n\n\n\n\n\n\t\t\t\t\t  \xdb\xdb\xdb\xdb\xdb\xdb\xdb\xdb\xdb\xdb\xdb\xdb\xdb\xdb\xdb\xdb\xdb\xdb\xdb\xdb\xdb\xdb\xdb\xdb\xdb\xdb\xdb\xdb" << endl;
     cout << "\t\t\t\t\t\t*WELCOME TO LOGIN*" << endl;
     cout << "\t\t\t\t\t  \xdb\xdb\xdb\xdb\xdb\xdb\xdb\xdb\xdb\xdb\xdb\xdb\xdb\xdb\xdb\xdb\xdb\xdb\xdb\xdb\xdb\xdb\xdb\xdb\xdb\xdb\xdb\xdb " << endl;
-    if (s == 1)
+
+    cout << "Enter your USER NAME  : ";
+    cin >> name;
+
+    cout << "Enter the PASSWORD   : ";
+    cin >> pwd;
+
+    ifstream f("user_logins.txt");
+    if (!f.is_open())
     {
-        cout << "Enter your USER NAME  : " << endl;
-        cin >> name;
+        cout << "Unable to open user_logins.txt file" << endl;
+        return 0;
     }
 
-    cout << "Enter the PASSWORD   : " << endl;
-    cin >> pwd;
-    
-    fstream f;
-    f.open("user_logins.txt", ios::in);
-    f.seekg(0);
-    
-    // REPLACE THIS ENTIRE SECTION:
-    // Remove from here ↓
-    /*
-    cout << "Read username: '" << u_name << "'" << endl;
-    cout << "Read password: '" << g_pwd << "'" << endl;
-    cout << "Input username: '" << name << "'" << endl;
-    cout << "Input password: '" << pwd << "'" << endl;
-    while (f)
-    {
-        f.get(dum);
-        f.get(u_name, 30);
-        f.get(dum);
-        f.get(g_pwd, 30);
-    */
-    // To here ↑
-    
-    // WITH THIS NEW CODE:
     string temp_name, temp_pwd;
-    while(getline(f, temp_name) && getline(f, temp_pwd)) {
-        strcpy(u_name, temp_name.c_str());
-        strcpy(g_pwd, temp_pwd.c_str());
- 
- 
-        
-        if (strcmp(u_name, name) == 0 && strcmp(pwd, g_pwd) == 0)
+    while (getline(f, temp_name) && getline(f, temp_pwd))
+    {
+        if (temp_name == name && temp_pwd == pwd)
         {
             flag = 1;
             cout << "\n\t\t\tYou have Successfully LOGGED IN ";
             break;
         }
-        else if (strcmp(u_name, name) == 0 && strcmp(pwd, g_pwd) != 0)
+        else if (temp_name == name && temp_pwd != pwd)
         {
             do
             {
                 cout << "\t\t\t----INCORRECT PASSWORD!!!----";
                 cout << "Re-Enter the PASSWORD : " << endl;
                 cin >> pwd;
-            } while (strcmp(pwd, g_pwd) != 0);
+            } while (temp_pwd != pwd);
 
             flag = 1;
             break;
         }
     }
-    
+
     if (flag == 0)
+    {
         cout << "\n\t\t\tSORRY!!! USER NAME and PASSWORD does not Exist" << endl;
-    system("clear");
+    }
     f.close();
+    system("clear");
     return flag;
 }
 
-
 void signup()
 {
-    cout << "\n\n\n\n\n\n\t\t\t\t\t  \xdb\xdb\xdb\xdb\xdb\xdb\xdb\xdb\xdb\xdb\xdb\xdb\xdb\xdb\xdb\xdb\xdb\xdb\xdb\xdb\xdb\xdb\xdb\xdb\xdb\xdb\xdb\xdb\xdb " << endl;
+    cout << "\n\n\n\n\n\n\t\t\t\t\t  =============================" << endl;
     cout << "\t\t\t\t\t\t*WELCOME TO SIGNUP*" << endl;
-    cout << "\t\t\t\t\t  \xdb\xdb\xdb\xdb\xdb\xdb\xdb\xdb\xdb\xdb\xdb\xdb\xdb\xdb\xdb\xdb\xdb\xdb\xdb\xdb\xdb\xdb\xdb\xdb\xdb\xdb\xdb\xdb\xdb " << endl;
-    char name[30], pwd[30], check_pwd[30];
-    fstream f;
-    f.open("user_logins.txt", ios::in);
-    char g_name[30], g_pwd[30], dum;
-    int flag;
+    cout << "\t\t\t\t\t  =============================" << endl;
+
+    string name, pwd, check_pwd;
+    string temp_name, temp_pwd;
+
     cout << "Enter your USER NAME : ";
     cin >> name;
-    do
+
+    // Check if username already exists
+    while (true)
     {
-        f.seekg(0);
-        while (f)
+        ifstream f("user_logins.txt");
+        bool username_exists = false;
+
+        while (getline(f, temp_name) && getline(f, temp_pwd))
         {
-            flag = 1;
-            f.get(dum);
-            f.get(g_name, 30);
-            f.get(dum);
-            f.get(g_pwd, 30);
-            if (strcmp(g_name, name) == 0)
+            if (temp_name == name)
             {
-                flag = 0;
+                username_exists = true;
                 break;
             }
         }
-        if (flag == 0)
+        f.close();
+
+        if (username_exists)
         {
             cout << "\n\t\t\t----USER-NAME ALREADY EXIST!!----" << endl;
             cout << "Enter your USER NAME : ";
             cin >> name;
         }
-    } while (flag == 0);
-    f.close();
-    f.open("user_logins.txt", ios::out | ios::app);
+        else
+        {
+            break;  // Username is unique, exit loop
+        }
+    }
+
+    // Password input and confirmation
     cout << "Enter your PASSWORD : ";
     cin >> pwd;
     cout << "Re-Enter your PASSWORD : ";
     cin >> check_pwd;
-    while (strcmp(pwd, check_pwd) != 0)
+
+    while (pwd != check_pwd)
     {
         cout << "\t\t\t----INCORRECT PASSWORD!!!----" << endl;
         cout << "Enter your PASSWORD : ";
@@ -130,37 +120,46 @@ void signup()
         cout << "Re-Enter your PASSWORD : ";
         cin >> check_pwd;
     }
-    f << endl
-      << name << endl
-      << pwd;
+
+    // Save user to file
+    ofstream f("user_logins.txt", ios::app);
+    f << name << endl << pwd << endl;
+    f.close();
+
+    // Success message 
     cout << "\n\t\t\t\t\t  YOUR NEW ID IS CREATING PLEASE WAIT";
     for (int i = 0; i < 6; i++)
     {
         cout << ".";
-        usleep(5000000);
+        usleep(500000);
     }
-    cout << "\n\n\t\t\t\t\t\aCONGRATULATION!!!YOUR ID CREATED SUCCESSFULLY....Please wait";
+
+    cout << "\n\n\t\t\t\t\tCONGRATULATION!!! YOUR ID CREATED SUCCESSFULLY....Please wait";
     usleep(500000);
     system("clear");
-    f.close();
 }
-int main()
-{
 
+
+auto main() -> int
+{
     map<pairstr, int> m;
     vector<string> station_name;
     vector<string> line;
     map<pairstr, set<string>> intersecting_stations;
     map<int, string> line_num;
+
     load_lines(line);
     vector<vector<int>> graph(line.size());
     hashes(m, station_name);
     line_hash_function(line_num, line);
-    intersecting_stations_funtion(intersecting_stations, line, m, station_name);
+    intersecting_stations_function(intersecting_stations, line, m, station_name);
     graph_function(graph);
-    int ch, flag;
+
+    int ch, flag = 0;
     char s;
+
     cout << "----------------------------------------WELCOME TO DELHI METRO ASSISTANCE----------------------------------------\n\n";
+
     do
     {
         cout << endl;
@@ -175,6 +174,7 @@ int main()
         cout << "Enter your Choice : ";
         cin >> ch;
         system("clear");
+
         switch (ch)
         {
         case 1:
@@ -185,7 +185,9 @@ int main()
             cout << "Do you want to LOGIN (Y/N)? : ";
             cin >> s;
             if (s == 'y' || s == 'Y')
+            {
                 flag = login();
+            }
             else
             {
                 cout << "\t\t\t\t\t\t\t \t\t\t\t\t ___________ \n";
@@ -205,42 +207,44 @@ int main()
             break;
         }
     } while (flag != 1);
+
     if (flag)
     {
         cout << "\n\t\t\t\t\t  LOGGING IN";
-        for (int i = 0; i < 6; i++)
+        for (int i = 0; i < 6; ++i)
         {
             cout << ".";
             usleep(500000);
-            ;
         }
         cout << endl;
+
         cout << "----------------------------------------WELCOME TO  Delhi Metro Assistant----------------------------------------\n\n";
         cout << "                                      We are here to find you the best route                                        \n\n";
         cout << "                                      Please enter the stations accordingly  :                                         " << endl
              << endl;
-        // Clear the newline character left by std::cin >>
-        std::cin.ignore(std::numeric_limits<std::streamsize>::max(), '\n');
-        // taking input from user.
-        string station1, station2;
 
-        cout << "     Enter the Source/Staring station  :- ";
+        // Clear the newline character left by cin >>
+        cin.ignore(numeric_limits<streamsize>::max(), '\n');
+
+        // Taking input from user
+        string station1, station2;
+        cout << "     Enter the Source/Starting station  :- ";
         getline(cin, station1);
-        cout << "\n\n     enter the Destination/Ending station :- ";
+        cout << "\n\n     Enter the Destination/Ending station :- ";
         getline(cin, station2);
         cout << endl;
-        // for checking the input station lines.
+
+        // For checking the input station lines
         string line1 = line_name(line, m, station1);
         string line2 = line_name(line, m, station2);
 
-        // for lines to their line number.
+        // For lines to their line number
         int line_num1 = line_num_function(line_num, line1);
         int line_num2 = line_num_function(line_num, line2);
-        // cout<<line_num1<<" "<<line_num2<<endl;
 
         if (line_num1 == -1 || line_num2 == -1)
         {
-            cout << "     Sorry! You entered wrong station name . Please Try again." << endl;
+            cout << "Sorry! You entered wrong station name. Please Try again." << endl;
         }
         else
         {
@@ -249,136 +253,127 @@ int main()
                 int num = abs(m[{station1, line1}] - m[{station2, line1}]);
                 cout << "     -Both of these stations are on the same line (" << line1 << ") so we do not need to change any lines" << endl;
                 cout << "     -There is only one Path which makes sense" << endl;
-                cout << "     -Start from station '" << station1 << "' to station '" << station2 << "' via " << line1 << "line" << endl;
-                cout << "     -Total number of station u have to cover are :" << num << endl;
+                cout << "     -Start from station '" << station1 << "' to station '" << station2 << "' via " << line1 << " line" << endl;
+                cout << "     -Total number of stations you have to cover are: " << num << endl;
                 cout << "-----------------------------------THANK YOU. HAVE A SAFE JOURNEY!!-------------------------------------- " << endl;
             }
             else
             {
+                // CORRECTED: Remove 'auto' and use explicit types
+                vector<vector<int>> dfs_paths = path_function(graph, line_num1, line_num2);
 
-                // for finding the paths with a limit or interchanging stations.
-                vector<vector<int>> dfs_paths;
-                dfs_paths = path_function(graph, line_num1, line_num2);
+                // CORRECTED: Remove 'auto' and use explicit types
+                vector<node> routes = path_with_station(dfs_paths, intersecting_stations, m, line_num, station1, station2);
 
-                // for output of paths according to the line number.
-                //  cout<<"total number of paths are : "<<endl;
-                //  cout<<dfs_paths.size()<<endl;
-                //  for(auto i:dfs_paths){
-                //       //cout<<i.size()<<endl;
-                //      for(auto j:i){
-                //          cout<<j<<" ";
-                //      }
-                //      cout<<endl;
-                //  }
-
-                // finding path with station's name .
-                vector<node> routes;
-                routes = path_with_station(dfs_paths, intersecting_stations, m, line_num, station1, station2);
-
-                // for sorting the path on the basis of their station numbers.
+                // For sorting the path on the basis of their station numbers
                 sorting(routes);
 
-                // for printing all the routes.
-                // cout<<routes.size()<<endl;
-                // for(auto i:routes){
-                //     cout<<i.val<<endl;
-                //     for(auto j:i.route){
-                //         cout<<j<<" ";
-                //     }
-                //     cout<<endl;
-                // }
 
-                // for printing the output
+                // For printing the output
                 int path_number = 0;
-                int n = routes.size();
-                for (auto i : routes)
-                {
+                int n = static_cast<int>(routes.size());
 
+                for (const auto &route : routes)
+                {
                     if (path_number == 0)
                     {
-
-                        path_number++;
-                        cout << "     -The shortest path from station " << station1 << "  to station  " << station2 << " is :" << endl;
+                        ++path_number;
+                        cout << "     -The shortest path from station " << station1 << " to station " << station2 << " is:" << endl;
                         cout << "     ";
-                        bool flag = true;
-                        for (auto j : i.route)
+
+                        auto print_route = [](const vector<string> &route_vec)
                         {
-                            if (flag)
+                            bool first = true;
+                            for (const auto &station : route_vec)
                             {
-                                cout << j;
-                                flag = false;
+                                if (first)
+                                {
+                                    cout << station;
+                                    first = false;
+                                }
+                                else
+                                {
+                                    cout << "  -->  " << station;
+                                }
                             }
-                            else
-                            {
-                                cout << "  -->  " << j;
-                            }
-                        }
+                        };
+
+                        print_route(route.route);
                         cout << endl;
-                        cout << "     -Total number of stations travelled during this route are : " << i.val << endl;
-                        cout << endl;
+                        cout << "     -Total number of stations travelled during this route are: " << route.val << endl
+                             << endl;
                     }
                     else if (path_number < n && path_number < 3)
                     {
-                        path_number++;
-                        if (path_number == 2)
-                            cout << "     -" << path_number << "nd shortest  path from station " << station1 << "  to station  " << station2 << " is :" << endl;
-                        if (path_number == 3)
-                            cout << "     -" << path_number << "rd shortest  path from station " << station1 << "  to station  " << station2 << " is :" << endl;
-
+                        ++path_number;
+                        string ordinal = (path_number == 2) ? "nd" : "rd";
+                        cout << "     -" << path_number << ordinal << " shortest path from station " << station1 << " to station " << station2 << " is:" << endl;
                         cout << "     ";
-                        bool flag = true;
-                        for (auto j : i.route)
+
+                        auto print_route = [](const vector<string> &route_vec)
                         {
-                            if (flag)
+                            bool first = true;
+                            for (const auto &station : route_vec)
                             {
-                                cout << j;
-                                flag = false;
+                                if (first)
+                                {
+                                    cout << station;
+                                    first = false;
+                                }
+                                else
+                                {
+                                    cout << "  -->  " << station;
+                                }
                             }
-                            else
-                            {
-                                cout << "  -->  " << j;
-                            }
-                        }
+                        };
+
+                        print_route(route.route);
                         cout << endl;
-                        cout << "     -Total number of stations travelled during this route are : " << i.val << endl;
-                        cout << endl;
+                        cout << "     -Total number of stations travelled during this route are: " << route.val << endl
+                             << endl;
                     }
                     else if (path_number < n && path_number > 2)
                     {
-                        path_number++;
+                        ++path_number;
                         char c;
                         cout << "     Do you want one more path. Enter y/n : ";
                         cin >> c;
                         if (c == 'y')
                         {
                             cout << endl;
-                            cout << "     -" << path_number << "th shortest  path from station " << station1 << "  to station  " << station2 << " is :" << endl;
+                            cout << "     -" << path_number << "th shortest path from station " << station1 << " to station " << station2 << " is:" << endl;
                             cout << "     ";
-                            bool flag = true;
-                            for (auto j : i.route)
+
+                            auto print_route = [](const vector<string> &route_vec)
                             {
-                                if (flag)
+                                bool first = true;
+                                for (const auto &station : route_vec)
                                 {
-                                    cout << j;
-                                    flag = false;
+                                    if (first)
+                                    {
+                                        cout << station;
+                                        first = false;
+                                    }
+                                    else
+                                    {
+                                        cout << "  -->  " << station;
+                                    }
                                 }
-                                else
-                                {
-                                    cout << "  -->  " << j;
-                                }
-                            }
+                            };
+
+                            print_route(route.route);
                             cout << endl;
-                            cout << "     -Total number of stations travelled during this route are : " << i.val << endl;
-                            cout << endl;
+                            cout << "     -Total number of stations travelled during this route are: " << route.val << endl
+                                 << endl;
                         }
                         else
                         {
                             cout << "-----------------------------------THANK YOU. HAVE A SAFE JOURNEY!!-------------------------------------- " << endl
                                  << endl;
-
                             break;
                         }
                     }
+
                     if (path_number == n)
                     {
                         cout << "-----------------------------------THANK YOU. HAVE A SAFE JOURNEY!!-------------------------------------- " << endl
@@ -389,4 +384,6 @@ int main()
             }
         }
     }
+
+    return 0;
 }
