@@ -1,10 +1,11 @@
+red/
 yellow/
 violet/
-red/
-blue/
-green/
-orange/
 magenta/
 pink/
 aqua/
+rapid/
 blue/
+blue1/
+green/
+airport/
